@@ -1,0 +1,15 @@
+---
+version: '3.7'
+services:
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./:/app/
+    environment:
+      - PG_USER=test
+      - PG_PASSWORD=test
+      - PG_DB=challenge_db
+    command:
+      ["./run_deployed.sh", "--reload"]
