@@ -13,7 +13,7 @@
 4. Make `run_dev.sh` executable by using `chmod +x run_dev.sh`
 5. To start the application: `./run_dev.sh`
 6. The url of this application should be: `http://localhost:5000`
-### On Mac (typical work environment, at least for me)
+### On Mac 
 1. Initialize virtual environment: `python -m venv venv-proj` then `source venv-proj/bin/activate`
 2. `pip install -r requirements.txt`
 3. Create `.env` file
