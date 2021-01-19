@@ -10,14 +10,18 @@
 ### On windows (git bash)
 1. Initialize virtual environment: `python -m venv venv-proj` then `source venv-proj\Scripts\activate.bat`
 2. `pip install -r requirements.txt`
-3. Create `.env` file
+3. Create `.env` file with the following keys: `pg_user`, `pg_db`, `pg_password` that map to the database credentials you created above
 4. Make `run_dev.sh` executable by using `chmod +x run_dev.sh`
 5. To start the application: `./run_dev.sh`
 6. The url of this application should be: `http://localhost:5000`
 ### On Mac 
 1. Initialize virtual environment: `python -m venv venv-proj` then `source venv-proj/bin/activate`
 2. `pip install -r requirements.txt`
-3. Create `.env` file
+3. Create `.env` file with the following keys: `pg_user`, `pg_db`, `pg_password` that map to the database credentials you created above
 4. Make `run_dev.sh` executable by using `chmod +x run_dev.sh`
 5. To start the application: `./run_dev.sh`
 6. The url of this application should be: `http://localhost:5000`
+
+## How to run tests
+Due to time limitations, I just used the same development database to write tests against. This project uses `pytest` which should run with the command:
+`pytest tests`
