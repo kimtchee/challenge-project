@@ -20,6 +20,10 @@ config = cf.get_config()
 conn, cursor = db.make_db_connection(config=config)
 
 
+def clear_nones(d):
+    return {k: v for k, v in d.items() if v is not None}
+
+
 def create_app():
     app = Flask(__name__)
 
@@ -30,21 +34,19 @@ def create_app():
     @app.route('/person', methods=['POST'])
     def create_person():
         expected_list_of_args = ['first_name', 'last_name', 'age', 'email']
-        required_args = check_args(expected_list_of_args, request.json)
+
+        person_to_create = clear_nones(request.json)
+        required_args = check_args(expected_list_of_args, person_to_create)
         if required_args:
             return {'success': False,
                     'message': 'Missing fields',
                     'fields': required_args}, 400
-        person_to_create = request.json
         person = pf.create_person(cursor, person_to_create)
         conn.commit()
         return {'created': bool(person), 'person': person}, 200
 
     @app.route('/person/<person_id>', methods=['GET'])
     def get_person(person_id):
-        if not person_id:
-            return {'success': False,
-                    'message': 'Missing request argument person_id in path'}, 400
         person = pf.get_person_by_id(cursor, person_id)
         return {'success': True, 'person': person}, 200
 
@@ -74,20 +76,11 @@ def create_app():
                                  'age',
                                  'email']
 
-        if not person_id:
-            return {'success': False,
-                    'message': 'Missing required person_id'}, 400
-
         if not check_args(editable_list_of_args, request.json, at_least_one=True):
             return {'success': False,
                     'message': (f'Missing at least one of expected args '
                                 f'{editable_list_of_args}')}, 400
-        person_edits = request.json
-
-        for key in person_edits:
-            if person_edits[key] is None:
-                del person_edits[key]
-
+        person_edits = clear_nones(request.json)
         person = pf.get_person_by_id(cursor, person_id)
         person_copy = person.copy()
         person_copy.update(person_edits)
@@ -96,31 +89,21 @@ def create_app():
             return {'updated': False,
                     'person': person,
                     'message': 'No updated necessary with data passed in'}, 200
-        person_updated = pf.update_person(cursor, person)
+        person_updated = pf.update_person(cursor, person_copy)
         conn.commit()
         return {'updated': bool(person_updated), 'person': person_updated}, 200
 
-    @app.route('/person', methods=['DELETE'])
-    def delete_person():
-        expected_list_of_args = ['id']
-        required_args = check_args(expected_list_of_args, request.json)
-        if required_args:
-            return {'message': 'Missing fields',
-                    'fields': required_args}, 400
-
-        person_id = request.json['id']
+    @app.route('/person/<person_id>', methods=['DELETE'])
+    def delete_person(person_id):
+        person = pf.get_person_by_id(cursor, person_id)
+        if not person:
+            return {'message': 'No such person'}, 404
         pf.delete_person(cursor, person_id)
         conn.commit()
-        return {'deleted': True, 'id': person_id}, 200
+        return {'deleted': True, 'person_id': person_id}, 200
 
-    @app.route('/latest_person_version', methods=['DELETE'])
-    def delete_person_version():
-        expected_list_of_args = ['id']
-
-        if not check_args(expected_list_of_args, request.json):
-            return 'Missing id', 400
-
-        person_id = request.json['id']
+    @app.route('/latest_person_version/<person_id>', methods=['DELETE'])
+    def delete_person_version(person_id):
         person = pf.get_person_by_id(cursor, person_id)
         if not person:
             return {'message': 'No such person'}, 404
@@ -131,4 +114,4 @@ def create_app():
 
 
 if __name__ == '__main__':
-    print('derp')
+    print('Hello World!')
