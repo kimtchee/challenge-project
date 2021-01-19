@@ -14,8 +14,10 @@ def insert_person(cur, person):
         INSERT INTO people.people
           (person_id, first_name, middle_name, last_name, email, age)
         VALUES (%(person_id)s, %(first_name)s, %(middle_name)s, %(last_name)s, %(email)s, %(age)s)
+        RETURNING person_version
         '''
     cur.execute(query, person)
+    return cur.fetchone()
 
 
 def create_person(cur, person_info):
@@ -25,7 +27,9 @@ def create_person(cur, person_info):
     person.update(person_info)
     if not person.get('middle_name'):
         person['middle_name'] = None
-    insert_person(cur, person)
+    person_inserted = insert_person(cur, person)
+    version = person_inserted['person_version']
+    person['version'] = version
     return person
 
 

@@ -109,7 +109,7 @@ def create_app():
             return {'message': 'No such person'}, 404
         pf.delete_person_with_version(cursor, person_id, person['version'])
         conn.commit()
-        return {'deleted': True, 'id': person_id, 'version': person['version']}, 200
+        return {'deleted': True, 'person_id': person_id, 'version': person['version']}, 200
     return app
 
 
