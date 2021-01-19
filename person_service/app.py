@@ -67,33 +67,35 @@ def create_app():
         persons = pf.get_all_people(cursor)
         return {'success': True, 'people': persons}, 200
 
-    @app.route('/person', methods=['PUT'])
-    def update_person():
-        expected_list_of_args = ['id']
+    @app.route('/person/<person_id>', methods=['PUT'])
+    def update_person(person_id):
         editable_list_of_args = ['first_name',
                                  'last_name',
                                  'age',
                                  'email']
 
-        required_args = check_args(expected_list_of_args, request.json)
-        if required_args:
+        if not person_id:
             return {'success': False,
-                    'message': 'Missing required fields',
-                    'fields': required_args}, 400
+                    'message': 'Missing required person_id'}, 400
 
         if not check_args(editable_list_of_args, request.json, at_least_one=True):
             return {'success': False,
                     'message': (f'Missing at least one of expected args '
                                 f'{editable_list_of_args}')}, 400
         person_edits = request.json
-        person_id = person_edits['id']
-        del person_edits['id']
+
         for key in person_edits:
             if person_edits[key] is None:
                 del person_edits[key]
 
         person = pf.get_person_by_id(cursor, person_id)
-        person.update(person_edits)
+        person_copy = person.copy()
+        person_copy.update(person_edits)
+
+        if person == person_copy:
+            return {'updated': False,
+                    'person': person,
+                    'message': 'No updated necessary with data passed in'}, 200
         person_updated = pf.update_person(cursor, person)
         conn.commit()
         return {'updated': bool(person_updated), 'person': person_updated}, 200

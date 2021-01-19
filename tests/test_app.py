@@ -1,3 +1,5 @@
+import random
+
 import person_service.app as app
 from faker import Faker
 
@@ -36,3 +38,14 @@ def test_create_person(test_client):
     assert person['first_name'] == person_to_create['first_name']
     assert response['created']
     assert person['person_id']
+
+
+def test_update_person(test_client):
+    person_id = 'ceb5770f-c4e3-4ad7-bc5e-4e32e8047e63'
+    age = random.randint(0, 100)
+    person_to_update = {'age': age}
+    res = test_client.put(f'/person/{person_id}',
+                          json=person_to_update)
+    response = res.get_json()
+    person = response['person']
+    assert person['age'] == person_to_update['age']

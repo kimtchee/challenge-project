@@ -3,7 +3,10 @@
 2. Have Postgresql 13.x installed
 
 # Setup DB
-1. use `psql -U postgres`, create a database called `test` (or whatever you want, this will be used by the app) and user called `test` (used by app) and copy paste the `person_service/db_scripts/deploy` scripts to initialize the database.
+1. use `psql -U postgres`
+2. create a database called `test` (or whatever you want, this will be used by the app)
+3. create user called `test` (used by app) with password `test`
+4. copy paste the `person_service/db_scripts/deploy` scripts to initialize the database OR use `psql -U postgres -d test -f person_service/db_scripts/deploy/0001_create_person_tables.sql` and `psql -U postgres -d test -f person_service/db_scripts/deploy/0002_create_person_fixtures.sql`
 
 # How to run
 1. Download the repository by using `git clone`
