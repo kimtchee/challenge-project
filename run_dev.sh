@@ -1,5 +1,5 @@
 #!/bin/bash
 
 export FLASK_ENV='development'
-export FLASK_APP='test_proj/app.py'
+export FLASK_APP='person_service/app.py'
 exec flask run
