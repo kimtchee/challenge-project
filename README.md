@@ -6,6 +6,7 @@
 1. use `psql -U postgres`, create a database called `test` (or whatever you want, this will be used by the app) and user called `test` (used by app) and copy paste the `person_service/db_scripts/deploy` scripts to initialize the database.
 
 # How to run
+1. Download the repository by using `git clone`
 ### On windows (git bash)
 1. Initialize virtual environment: `python -m venv venv-proj` then `source venv-proj\Scripts\activate.bat`
 2. `pip install -r requirements.txt`
