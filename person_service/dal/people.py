@@ -117,7 +117,6 @@ def get_all_people(cursor):
 
 
 def update_person(cursor, person_updates):
-    print(person_updates)
     query = '''\
         INSERT INTO people.people
           (person_id, first_name, middle_name, last_name, email, age)

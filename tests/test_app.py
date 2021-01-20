@@ -66,7 +66,7 @@ def test_update_person(test_client):
 
 def test_get_person_by_version(test_client):
     id = 'ceb5770f-c4e3-4ad7-bc5e-4e32e8047e63'
-    version = 4
+    version = 1
     res = test_client.get(f'/person_by_version/{id}?version={version}')
     response = res.get_json()
     person = response['person']
@@ -99,3 +99,25 @@ def test_delete_person(test_client):
     res = test_client.delete(f'/person/{person_id}')
     response = res.get_json()
     assert response['deleted']
+
+
+def test_delete_latest_version(test_client):
+    person_to_create = {
+        'first_name': fake.first_name(),
+        'last_name': fake.last_name(),
+        'age': 25,
+        'email': fake.email()}
+    res = test_client.post('/person', json=person_to_create)
+    response = res.get_json()
+    person = response['person']
+    person_id = person['person_id']
+
+    person_update = {'age': 30}
+    test_client.put(f'/person/{person_id}', json=person_update)
+
+    res = test_client.delete(f'/latest_person_version/{person_id}')
+    response = res.get_json()
+    assert response['deleted']
+    assert response['person_id'] == person_id
+    assert response['version']
+    
