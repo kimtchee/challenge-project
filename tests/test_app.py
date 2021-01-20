@@ -125,4 +125,3 @@ def test_delete_latest_version(test_client):
     assert response['deleted']
     assert response['person_id'] == person_id
     assert response['version']
-    

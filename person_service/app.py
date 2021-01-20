@@ -1,9 +1,10 @@
+from flask import Flask
+from flask import request
+import psycopg2
+
 import person_service.config as cf
 import person_service.dal.people as pf
 import person_service.db as db
-
-from flask import Flask
-from flask import request
 
 
 def check_args(expected_list_of_args, args, at_least_one=False):
@@ -26,6 +27,14 @@ def clear_nones(d):
 
 def create_app():
     app = Flask(__name__)
+
+    @app.errorhandler(Exception)
+    def handle_exception(e):
+        if isinstance(e, psycopg2.Error):
+            if conn:
+                conn.rollback()
+            return {'message': f'{e}', 'success': False}, 500
+        return e
 
     @app.route('/')
     def hello():
