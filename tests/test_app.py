@@ -7,6 +7,11 @@ fake = Faker()
 Faker.seed(4321)
 
 
+def test_check_args():
+    assert app.check_args(['a', 'f'], ['a']) == ['f']
+    assert app.check_args(['a', 'f'], ['a'], at_least_one=True)
+
+
 def test_app_works(test_client):
     res = test_client.get('/')
     assert res.get_data(as_text=True) == 'Hello World!'
