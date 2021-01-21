@@ -99,18 +99,24 @@ def get_person_by_id_and_version(cursor, person_id, version):
 
 def get_all_people(cursor):
     query = '''\
-        SELECT pg.person_id,
-        p.first_name,
-        p.middle_name,
-        p.last_name,
-        p.email,
-        p.age,
-        p.person_version as version
-        FROM people.people_guids pg
-        JOIN people.people p ON p.person_id = pg.person_id
-        LEFT JOIN people.deleted_people dp ON pg.person_id = dp.person_id
-        WHERE dp.person_id IS NULL
-        ORDER BY p.person_version
+        WITH latest_versions AS (
+             SELECT pg.person_id,
+                MAX(p.person_version) as version
+                FROM people.people_guids pg
+                JOIN people.people p ON p.person_id = pg.person_id
+                LEFT JOIN people.deleted_people dp ON pg.person_id = dp.person_id
+                WHERE dp.person_id IS NULL
+                GROUP BY pg.person_id
+        )
+        SELECT lv.person_id,
+        lv.version,
+        pp.first_name,
+        pp.middle_name,
+        pp.last_name,
+        pp.email,
+        pp.age
+        FROM latest_versions lv
+        JOIN people.people pp ON pp.person_id = lv.person_id AND pp.person_version = lv.version;
         '''
     cursor.execute(query)
     return cursor.fetchall()
